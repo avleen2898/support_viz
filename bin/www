@@ -8,6 +8,11 @@ const debug = require('debug')('node-tutorial:server');
 const http = require('http');
 
 /**
+ * Concurrency support
+ */
+const concurrency = process.env.WEB_CONCURRENCY || 1;
+
+/**
  * Get port from environment and store in Express.
  */
 const port = normalizePort(process.env.PORT || '3000');
@@ -17,7 +22,7 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.

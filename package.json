@@ -3,15 +3,25 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "(cd frontend && npm run build && cd ../) & node ./bin/www"
+    "start": "(cd frontend && npm run build && cd ../) & node ./bin/www",
+    "server": "(cd frontend && npm run build && cd ../) & nodemon ./bin/www"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "helmet": "^3.22.0",
     "http-errors": "~1.6.3",
     "mongodb": "^3.5.7",
+    "mongoose": "^5.9.15",
     "morgan": "~1.9.1",
     "pug": "^2.0.4"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "nodemon": "^2.0.4"
   }
 }
