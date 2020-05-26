@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "(cd frontend && npm run build && cd ../) & node ./bin/www",
-    "server": "(cd frontend && npm run build && cd ../) & nodemon ./bin/www"
+    "full-dev": "(cd frontend && npm run build && cd ../) & nodemon ./bin/www",
+    "server-dev": "nodemon ./bin/www",
+    "client-dev": "(cd frontend && npm run server)"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,6 +21,8 @@
     "mongodb": "^3.5.7",
     "mongoose": "^5.9.15",
     "morgan": "~1.9.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
     "pug": "^2.0.4",
     "validator": "^13.0.0"
   },
