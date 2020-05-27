@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "(cd frontend && npm run build && cd ../) & node ./bin/www",
-    "server": "(cd frontend && npm run build && cd ../) & nodemon ./bin/www"
+    "full-dev": "concurrently \"set PORT=3001 && nodemon ./bin/www\" \"npm start --prefix frontend\"",
+    "server-dev": "nodemon ./bin/www",
+    "client-dev": "(cd frontend && npm run server)"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
