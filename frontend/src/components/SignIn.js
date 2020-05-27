@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -52,6 +53,11 @@ class SignIn extends React.Component {
             password: this.state.password
         };
         console.log(userData);
+        axios.post(`/api/users/login`, userData)
+          .then(res => {
+              console.log(res);
+              console.log(res.data);
+          });
     };
 
     render() {
@@ -121,8 +127,6 @@ class SignIn extends React.Component {
             </Container>
         );
     }
-
-
 };
 
 export default withStyles(useStyles)(SignIn);

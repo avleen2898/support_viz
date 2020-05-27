@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { ReactComponent as Logo } from '../logo.svg';
+import axios from "axios";
 
 const useStyles = (theme) => ({
     paper: {
@@ -33,8 +34,8 @@ class SignUp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          fname: "",
-          lname: "",
+          firstName: "",
+          lastName: "",
           email: "",
           password: "",
           password2: "",
@@ -49,13 +50,18 @@ class SignUp extends React.Component {
     onSubmit = e => {
         e.preventDefault();
         const newUser = {
-            fname: this.state.fname,
-            lname: this.state.lname,
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
             email: this.state.email,
             password: this.state.password,
             password2: this.state.password2
         };
         console.log(newUser);
+        axios.post(`/api/users/register`, newUser, {headers: {'Accept': 'application/json'}})
+          .then(res => {
+              console.log(res);
+              console.log(res.data);
+          });
     };
 
     render() {
@@ -74,12 +80,12 @@ class SignUp extends React.Component {
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
-                                autoComplete="fname"
+                                autoComplete="firstName"
                                 name="firstName"
                                 variant="filled"
                                 required
                                 fullWidth
-                                id="fname"
+                                id="firstName"
                                 label="First Name"
                                 autoFocus
                                 onChange={this.onChange}
@@ -90,10 +96,10 @@ class SignUp extends React.Component {
                                 variant="filled"
                                 required
                                 fullWidth
-                                id="lname"
+                                id="lastName"
                                 label="Last Name"
                                 name="lastName"
-                                autoComplete="lname"
+                                autoComplete="lastName"
                                 onChange={this.onChange}
                             />
                         </Grid>

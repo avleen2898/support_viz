@@ -10,7 +10,7 @@ const validateRegisterInput = require("../services/validation/register");
 const User = require("../models/User");
 
 router.post("/login", (req, res) => {
-
+    console.log(req.body);
     const {errors, isValid} = validateLoginInput(req.body);
     if (!isValid) {
         return res.status(400).json(errors);
