@@ -44,6 +44,7 @@ class SignIn extends React.Component {
 
     onChange = e => {
       this.setState({[e.target.id]: e.target.value});
+      this.setState({errors: {}});
     };
 
     onSubmit = e => {
@@ -55,8 +56,19 @@ class SignIn extends React.Component {
         console.log(userData);
         axios.post(`/api/users/login`, userData)
           .then(res => {
-              console.log(res);
+              console.log("From then: ", res);
               console.log(res.data);
+          })
+          .catch(res => {
+              console.log("From catch: ", res.response.data);
+              let responseErrors = res.response.data;
+              let errorsObj = {};
+              console.log(Object.keys(responseErrors));
+              Object.keys(responseErrors).forEach((key) => {
+                  errorsObj[key] = responseErrors[key];
+              });
+              this.setState({errors: errorsObj});
+              console.log("Errors state is: ", this.state.errors);
           });
     };
 
@@ -84,6 +96,8 @@ class SignIn extends React.Component {
                             autoComplete="email"
                             autoFocus
                             onChange={this.onChange}
+                            error={!!errors.email}
+                            helperText={!!errors.email ? errors.email: ''}
                         />
                         <TextField
                             variant="filled"
@@ -96,6 +110,8 @@ class SignIn extends React.Component {
                             id="password"
                             autoComplete="current-password"
                             onChange={this.onChange}
+                            error={!!errors.password}
+                            helperText={!!errors.password ? errors.password: ''}
                         />
                         <FormControlLabel
                             control={<Checkbox value="remember" color="primary" />}
