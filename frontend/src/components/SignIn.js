@@ -9,8 +9,8 @@ import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import { withStyles } from '@material-ui/core/styles';
-import { ReactComponent as Logo } from '../logo.svg';
+import {withStyles} from '@material-ui/core/styles';
+import {ReactComponent as Logo} from '../logo.svg';
 
 const useStyles = (theme) => ({
     paper: {
@@ -43,8 +43,8 @@ class SignIn extends React.Component {
     }
 
     onChange = e => {
-      this.setState({[e.target.id]: e.target.value});
-      this.setState({errors: {}});
+        this.setState({[e.target.id]: e.target.value});
+        this.setState({errors: {}});
     };
 
     onSubmit = e => {
@@ -53,33 +53,29 @@ class SignIn extends React.Component {
             email: this.state.email,
             password: this.state.password
         };
-        console.log(userData);
         axios.post(`/api/users/login`, userData)
-          .then(res => {
-              console.log("From then: ", res);
-              console.log(res.data);
-          })
-          .catch(res => {
-              console.log("From catch: ", res.response.data);
-              let responseErrors = res.response.data;
-              let errorsObj = {};
-              console.log(Object.keys(responseErrors));
-              Object.keys(responseErrors).forEach((key) => {
-                  errorsObj[key] = responseErrors[key];
-              });
-              this.setState({errors: errorsObj});
-              console.log("Errors state is: ", this.state.errors);
-          });
+            .then(res => {
+                console.log("From then: ", res);
+                console.log(res.data);
+            })
+            .catch(res => {
+                let responseErrors = res.response.data;
+                let errorsObj = {};
+                Object.keys(responseErrors).forEach((key) => {
+                    errorsObj[key] = responseErrors[key];
+                });
+                this.setState({errors: errorsObj});
+            });
     };
 
     render() {
         const {classes} = this.props;
         const {errors} = this.state;
         return (
-          <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="xs">
                 <div className={classes.paper}>
                     <Avatar className={classes.avatar}>
-                        <Logo />
+                        <Logo/>
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Welcome!
@@ -97,7 +93,7 @@ class SignIn extends React.Component {
                             autoFocus
                             onChange={this.onChange}
                             error={!!errors.email}
-                            helperText={!!errors.email ? errors.email: ''}
+                            helperText={!!errors.email ? errors.email : ''}
                         />
                         <TextField
                             variant="filled"
@@ -111,10 +107,10 @@ class SignIn extends React.Component {
                             autoComplete="current-password"
                             onChange={this.onChange}
                             error={!!errors.password}
-                            helperText={!!errors.password ? errors.password: ''}
+                            helperText={!!errors.password ? errors.password : ''}
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
+                            control={<Checkbox value="remember" color="primary"/>}
                             label="Remember me"
                         />
                         <Button
