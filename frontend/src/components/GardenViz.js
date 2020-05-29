@@ -5,8 +5,6 @@ class GardenViz extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      width: window.innerWidth,
-      height: window.innerHeight,
       bgImg: '',
       allSupporters: [],
       flowersOnScreen: 15,
@@ -24,26 +22,14 @@ class GardenViz extends React.Component {
       allCoordinates: [],
       allStartLocations: []
     };
-    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-  }
-
-  updateWindowDimensions() {
-    this.setState({width: window.innerWidth, height: window.innerHeight});
-    // let img = p5.loadImage(require("../images/background.jpg"));
-    // this.setState({bgImg: img});
-  }
-
-  componentDidMount() {
-    this.updateWindowDimensions();
-    window.addEventListener('resize', this.updateWindowDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
   updateTheme() {
     this.setState({currentColorTheme: this.state.colorThemePurple, currentStrokeTheme: this.state.strokeThemePurple});
+  }
+
+  updateCanvas(p5) {
+    p5.resizeCanvas(window.innerWidth, window.innerHeight);
   }
 
   preload = (p5) => {
@@ -55,7 +41,8 @@ class GardenViz extends React.Component {
 
   setup = (p5, canvasParentRef) => {
     p5.disableFriendlyErrors = true;
-    p5.createCanvas(this.state.width, this.state.height).parent(canvasParentRef);
+    let network = p5.createCanvas(window.innerWidth, window.innerHeight).parent(canvasParentRef);
+    network.id("supportViz");
     this.updateTheme();
   };
 
@@ -65,7 +52,7 @@ class GardenViz extends React.Component {
   };
 
   render() {
-    return <Sketch preload={this.preload} setup={this.setup} draw={this.draw} />;
+    return <Sketch preload={this.preload} setup={this.setup} draw={this.draw} windowResized={this.updateCanvas}/>;
   }
 }
 
