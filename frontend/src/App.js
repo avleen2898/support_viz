@@ -1,5 +1,5 @@
 import React from 'react';
-import SignIn from './components/SignIn.js';
+import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import GardenViz from './components/GardenViz';
 import {BrowserRouter as Router, Route} from 'react-router-dom';

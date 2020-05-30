@@ -1,5 +1,6 @@
 import React from 'react';
 import Sketch from 'react-p5';
+import Flower from 'Flower';
 
 class GardenViz extends React.Component {
   constructor(props) {
@@ -48,11 +49,15 @@ class GardenViz extends React.Component {
 
   draw = (p5) => {
     p5.background(this.state.bgImg);
-    p5.ellipse(100, 100, 70, 70);
   };
 
   render() {
-    return <Sketch preload={this.preload} setup={this.setup} draw={this.draw} windowResized={this.updateCanvas}/>;
+    return (
+      <div>
+        <Flower communityType={1} prayers={[6, 5, 4, 3, 2, 1]}/>
+        <Sketch preload={this.preload} setup={this.setup} draw={this.draw} windowResized={this.updateCanvas}/>
+      </div>
+      );
   }
 }
 
