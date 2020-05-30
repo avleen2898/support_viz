@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -53,7 +53,7 @@ class SignIn extends React.Component {
             email: this.state.email,
             password: this.state.password
         };
-        axios.post(`/api/users/login`, userData)
+        Axios.post(`/api/users/login`, userData)
             .then(res => {
                 console.log("From then: ", res);
                 console.log(res.data);
@@ -118,8 +118,7 @@ class SignIn extends React.Component {
                             fullWidth
                             variant="contained"
                             color="primary"
-                            className={classes.submit}
-                        >
+                            className={classes.submit}>
                             Sign In
                         </Button>
                         <Grid container>

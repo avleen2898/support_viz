@@ -10,7 +10,6 @@ const validateRegisterInput = require("../services/validation/register");
 const User = require("../models/User");
 
 router.post("/login", (req, res) => {
-    console.log(req.body);
     const {errors, isValid} = validateLoginInput(req.body);
     if (!isValid) {
         return res.status(400).json(errors);
@@ -21,7 +20,7 @@ router.post("/login", (req, res) => {
 
     User.findOne({email}).then(user => {
         if (!user) {
-            return res.status(404).json({ email: "Email not found!" });
+            return res.status(404).json({email: "Email not found!"});
         }
 
         bcrypt.compare(password, user.password).then(isMatch => {
@@ -35,9 +34,13 @@ router.post("/login", (req, res) => {
                     payload,
                     process.env.JWT_KEY,
                     {
-                        expiresIn: 31556926 // 1 year in seconds
+                        expire: new Date() + 3600 // 1 year in seconds
                     },
                     (err, token) => {
+                        res.cookie('t', token, {
+                            expire: new Date() + 9999
+                        });
+
                         res.json({
                             success: true,
                             token: "Bearer " + token
@@ -45,9 +48,16 @@ router.post("/login", (req, res) => {
                     }
                 );
             } else {
-                return res.status(400).json({ password: "Incorrect password!" });
+                return res.status(400).json({password: "Incorrect password!"});
             }
         });
+    });
+});
+
+router.get('/signOut', function (req, res, next) {
+    res.clearCookie('t');
+    return res.status(200).json({
+        message: 'Sign out successful!'
     });
 });
 
@@ -60,7 +70,7 @@ router.post('/register', function (req, res, next) {
 
     User.findOne({email: req.body.email}).then(user => {
         if (user) {
-            res.status(400).json({ email: "Email already exists!" });
+            res.status(400).json({email: "Email already exists!"});
         }
 
         const newUser = new User({
