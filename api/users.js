@@ -9,7 +9,7 @@ const validateRegisterInput = require("../services/validation/register");
 
 const User = require("../models/User");
 
-router.post("/login", (req, res) => {
+router.post("/login", (req, res, next) => {
     const {errors, isValid} = validateLoginInput(req.body);
     if (!isValid) {
         return res.status(400).json(errors);
@@ -27,20 +27,17 @@ router.post("/login", (req, res) => {
             if (isMatch) {
                 const payload = {
                     id: user.id,
-                    name: user.name
+                    firstName: user.firstName,
+                    lastName: user.lastName
                 };
-
                 jwt.sign(
                     payload,
                     process.env.JWT_KEY,
                     {
-                        expire: new Date() + 3600 // 1 year in seconds
+                        expiresIn: 3600
                     },
                     (err, token) => {
-                        res.cookie('t', token, {
-                            expire: new Date() + 9999
-                        });
-
+                        if (err) next(err);
                         res.json({
                             success: true,
                             token: "Bearer " + token

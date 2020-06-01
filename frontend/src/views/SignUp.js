@@ -59,8 +59,7 @@ class SignUp extends React.Component {
         };
         axios.post(`/api/users/register`, newUser, {headers: {'Accept': 'application/json'}})
             .then(res => {
-                console.log(res);
-                console.log(res.data);
+                this.props.history.push("/login")
             })
             .catch(res => {
                 let responseErrors = res.response.data;

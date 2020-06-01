@@ -12,7 +12,6 @@ module.exports = passport => {
         new JwtStrategy(opts, (jwt_payload, done) => {
             User.findById(jwt_payload.id)
                 .then(user => {
-                    console.log('Checking JWT Token');
                     if (user) {
                         return done(null, user);
                     }
