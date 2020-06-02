@@ -64,7 +64,7 @@ class SignUp extends React.Component {
             password: this.state.password,
             password2: this.state.password2
         };
-        axios.post(`/api/users/register`, newUser, {headers: {'Accept': 'application/json'}})
+        axios.post(`/api/auth/register`, newUser, {headers: {'Accept': 'application/json'}})
             .then(res => {
                 this.props.history.push("/login")
             })

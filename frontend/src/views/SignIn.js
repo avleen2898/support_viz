@@ -70,7 +70,7 @@ class SignIn extends React.Component {
             password: this.state.password
         };
 
-        Axios.post(`/api/users/login`, userData)
+        Axios.post(`/api/auth/login`, userData)
             .then(res => {
                 const {token} = res.data;
                 localStorage.setItem("jwtToken", token);
