@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import Axios from 'axios';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -11,6 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import {withStyles} from '@material-ui/core/styles';
 import {ReactComponent as Logo} from '../logo.svg';
+import setAuthToken from "../utils/setAuthToken";
+import {setCurrentUser} from "../actions/authActions";
+import {connect} from 'react-redux'
 
 const useStyles = (theme) => ({
     paper: {
@@ -42,6 +45,18 @@ class SignIn extends React.Component {
         }
     }
 
+    componentDidMount() {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/");
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push('/');
+        }
+    }
+
     onChange = e => {
         this.setState({[e.target.id]: e.target.value});
         this.setState({errors: {}});
@@ -49,16 +64,22 @@ class SignIn extends React.Component {
 
     onSubmit = e => {
         e.preventDefault();
+
         const userData = {
             email: this.state.email,
             password: this.state.password
         };
-        axios.post(`/api/users/login`, userData)
+
+        Axios.post(`/api/auth/login`, userData)
             .then(res => {
-                console.log("From then: ", res);
-                console.log(res.data);
+                const {token} = res.data;
+                localStorage.setItem("jwtToken", token);
+                setAuthToken(token);
+                this.props.login(token);
             })
             .catch(res => {
+                console.log(res);
+
                 let responseErrors = res.response.data;
                 let errorsObj = {};
                 Object.keys(responseErrors).forEach((key) => {
@@ -118,8 +139,7 @@ class SignIn extends React.Component {
                             fullWidth
                             variant="contained"
                             color="primary"
-                            className={classes.submit}
-                        >
+                            className={classes.submit}>
                             Sign In
                         </Button>
                         <Grid container>
@@ -141,4 +161,16 @@ class SignIn extends React.Component {
     }
 };
 
-export default withStyles(useStyles)(SignIn);
+function mapStateToProps(state) {
+    return {
+        auth: state.auth
+    }
+};
+
+function mapDispatchToProps(dispatch) {
+    return {
+        login: token => dispatch(setCurrentUser(token))
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles)(SignIn));

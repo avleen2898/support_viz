@@ -20,10 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'frontend/build')));
-app.use(passport.initialize());
 
-app.use('/api/health', healthRouter);
-app.use('/api/users', usersRouter);
+app.use(passport.initialize());
 
 if (app.get('env') === 'development') {
     require('dotenv').config();
@@ -34,6 +32,9 @@ require('./loaders/db')
 
 // setup passport
 require("./config/passport")(passport);
+
+app.use('/api/auth', usersRouter);
+app.use('/api/health', passport.authenticate('jwt'), healthRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
