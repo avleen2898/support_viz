@@ -1,12 +1,16 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import SignIn from './components/SignIn.js';
+import SignUp from './components/SignUp';
+import {BrowserRouter as Router, Route} from 'react-router-dom';
 import './App.css';
 
 function App() {
   return (
-    <Button variant="contained" color="primary">
-        Hello World
-    </Button>
+      <Router>
+        <Route exact path='/' component={SignIn} />
+        <Route exact path='/register' component={SignUp} />
+      </Router>
+
   );
 }
 
