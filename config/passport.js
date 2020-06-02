@@ -12,7 +12,6 @@ module.exports = passport => {
         new JwtStrategy(opts, (jwt_payload, done) => {
             User.findById(jwt_payload.id)
                 .then(user => {
-                    console.log('Checking JWT Token');
                     if (user) {
                         return done(null, user);
                     }
@@ -21,4 +20,12 @@ module.exports = passport => {
                 .catch(err => console.log(err));
         })
     );
+
+    passport.serializeUser(function(user, done) {
+        done(null, user);
+    });
+
+    passport.deserializeUser(function(user, done) {
+        done(null, user);
+    });
 };

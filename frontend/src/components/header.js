@@ -2,6 +2,7 @@ import React from 'react'
 import {withStyles} from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import {ReactComponent as Logo} from "../logo.svg";
+import {connect} from 'react-redux';
 import Button from "@material-ui/core/Button";
 
 const useStyles = (theme) => ({
@@ -19,34 +20,31 @@ const useStyles = (theme) => ({
         backgroundColor: theme.palette.secondary.main,
     },
     button: {
+        marginLeft: 'auto',
+        color: theme.palette.primary.dark
+    },
+    greeting: {
         marginLeft: 'auto'
     }
 });
 
 class Header extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isLoggedIn: false
-        }
-    }
 
     render() {
         const {classes} = this.props;
         let button;
-        if (!this.state.isLoggedIn) {
+        if (!this.props.isLoggedIn) {
             button = <Button
                 type="submit"
                 variant="contained"
-                color="primary.dark"
                 className={classes.button}
                 href="/login"
             >
                 Sign In
             </Button>
         } else {
-            button = <h2 className={classes.button}>
-                Welcome User!
+            button = <h2 className={classes.greeting}>
+                Welcome {this.props.user.firstName}!
             </h2>
         }
 
@@ -64,4 +62,11 @@ class Header extends React.Component {
     }
 }
 
-export default withStyles(useStyles)(Header);
+function mapStateToProps(state) {
+    return {
+        isLoggedIn: state.auth.isAuthenticated,
+        user: state.auth.user
+    }
+};
+
+export default connect(mapStateToProps)(withStyles(useStyles)(Header));

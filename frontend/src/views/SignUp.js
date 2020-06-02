@@ -9,6 +9,7 @@ import {withStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {ReactComponent as Logo} from '../logo.svg';
 import axios from "axios";
+import {connect} from 'react-redux'
 
 const useStyles = (theme) => ({
     paper: {
@@ -43,6 +44,12 @@ class SignUp extends React.Component {
         };
     }
 
+    componentDidMount() {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/");
+        }
+    }
+
     onChange = e => {
         this.setState({[e.target.id]: e.target.value});
         this.setState({errors: {}});
@@ -57,10 +64,9 @@ class SignUp extends React.Component {
             password: this.state.password,
             password2: this.state.password2
         };
-        axios.post(`/api/users/register`, newUser, {headers: {'Accept': 'application/json'}})
+        axios.post(`/api/auth/register`, newUser, {headers: {'Accept': 'application/json'}})
             .then(res => {
-                console.log(res);
-                console.log(res.data);
+                this.props.history.push("/login")
             })
             .catch(res => {
                 let responseErrors = res.response.data;
@@ -183,4 +189,10 @@ class SignUp extends React.Component {
     }
 }
 
-export default withStyles(useStyles)(SignUp);
+function mapStateToProps(state) {
+    return {
+        auth: state.auth
+    }
+};
+
+export default connect(mapStateToProps)(withStyles(useStyles)(SignUp));
