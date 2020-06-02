@@ -11,7 +11,7 @@ class GardenViz extends React.Component {
   Sketch = (p) => {
     // Ignore the friendly errors that come from the copy function
     p.disableFriendlyErrors = true;
-    // Array to store all supporters from json file
+    // TODO: get supporter data from backend
     let allSupporters = [];
     // Set a limit for the maximum number of flowers on the screen -- to be used in future implementations
     let flowersOnScreen = 15;
@@ -22,11 +22,10 @@ class GardenViz extends React.Component {
     let bgImg;
     // Storing for experimentation
     let brunoImg;
-    // Variable to read in json data
+    // Variable to store data for now
     let data = [{
       "prayers": [6, 6, 5, 4, 1, 1],
       "communityType": 3,
-      "relationshipLength": 2,
       "face": "bruno.jpg",
       "signUpTime": 1020303,
       "name": "Bruno"
@@ -68,27 +67,24 @@ class GardenViz extends React.Component {
       // p.loadImage(imgPath, img => {
       //   imageDoneLoading(0, img);
       // });
-
       // Set default color and stroke themes
       currentColorTheme = colorThemePurple;
       currentStrokeTheme = strokeThemePurple;
+      colorTheme = currentColorTheme;
+      strokeTheme = currentStrokeTheme;
+      imageDoneLoading(0, brunoImg);
     };
 
     // Create flower objects out of supporter data in json file
     function imageDoneLoading(supporter, face) {
-      allSupporters.push(new Flower(data[supporter].prayers, data[supporter].communityType, data[supporter].relationshipLength, data[supporter].face,
-        data[supporter].name, face));
+      allSupporters.push(new Flower(data[supporter].prayers, data[supporter].communityType, data[supporter].face, data[supporter].name, face));
     }
 
     p.draw = () => {
-      // Set current color and stroke themes
-      colorTheme = currentColorTheme;
-      strokeTheme = currentStrokeTheme;
       allCoordinates = [];
       p.background(bgImg);
       // Loop to draw each flower on the canvas
       // for (let i = 0; i <= allSupporters.length; i++) {
-      imageDoneLoading(0, brunoImg);
       let i = 0;
         p.push();
         let f = allSupporters[i];
@@ -110,17 +106,17 @@ class GardenViz extends React.Component {
     };
 
     class Flower {
-      constructor(prayers, communityType, relationshipLength, faceImageName, name, face) {
+      constructor(prayers, communityType, faceImageName, name, face) {
         this.prayers = prayers;
         this.communityType = communityType;
-        this.relationshipLength = relationshipLength;
         this.faceImageName = faceImageName;
         this.name = name;
         this.face = face;
 
         this.flowerColor = this.calculateColor();
         this.startLocation = this.calculateStartLocation(this.communityType);
-        this.segmentsLength = this.calculateSegmentLength(this.relationshipLength);
+        // TODO: make segmentsLength random; no more dependency on relationship length
+        this.segmentsLength = 80;
         this.flowerRadius = p.map(this.segmentsLength, 50, 80, 40, 60);
         this.flowerPetalNum = this.calculatePetals(this.prayers);
         this.startAngle = p.random(-10, 10);
@@ -202,14 +198,14 @@ class GardenViz extends React.Component {
       }
 
       // Calculates the number of petals for the flower (min: 3, max: 15)
-      calculatePetals(prayers) {
+      calculatePetals = (prayers) => {
         if (prayers.length < 3) return 3;
         if (prayers.length > 15) return 15;
         return prayers.length;
-      }
+      };
 
       // Calculates the color of the flower based on most recent prayer
-      calculateColor() {
+      calculateColor = () => {
         let lastPrayer = this.prayers[this.prayers.length - 1];
         if (lastPrayer === 1) {
           return p.color(colorTheme[0]);
@@ -224,23 +220,10 @@ class GardenViz extends React.Component {
         } else {
           return p.color(colorTheme[5]);
         }
-      }
-
-      // Mapping length of flower stem based on relationship length
-      calculateSegmentLength(relationshipLength) {
-        let len;
-        if (relationshipLength === 0) {
-          len = p.random(p.height/4, p.height/3);
-        } else if (relationshipLength === 1) {
-          len = p.random(p.height/3, p.height/2);
-        } else {
-          len = p.random(p.height/2, p.height);
-        }
-        return p.map(len, p.height/4, p.height, 60, 160);
-      }
+      };
 
       // Calculating start location for the flower based on community type
-      calculateStartLocation(communityType) {
+      calculateStartLocation = (communityType) => {
         let segment = (p.width - 200)/3;
         let location, lowerBound, upperBound, locationValid;
         locationValid = false;
@@ -262,24 +245,25 @@ class GardenViz extends React.Component {
           locationValid = checkLocationValid(location);
         }
         return location;
-      }
+      };
 
       // Function to populate the div for a supporter with all their details
-      initializeSupporterDetails() {
+      // TODO: Add supporter image to div
+      initializeSupporterDetails = () => {
         this.div.addClass('supporterDetailDiv');
-        let img = p.createImg("images/" + this.faceImageName, 'Supporter Image');
+        // let img = p.createImg("images/" + this.faceImageName, 'Supporter Image');
         let name = p.createP(this.name);
         let lastActive = p.createP("Last Active: " + this.getLastActive());
         let community = p.createP("Community: " + this.getCommunity());
-        this.div.child(img);
+        // this.div.child(img);
         this.div.child(name);
         this.div.child(lastActive);
         this.div.child(community);
         this.div.hide();
-      }
+      };
 
       // Handle click events on the flower to show supporter information
-      handleClick() {
+      handleClick = () => {
         this.showSupporterDetails = !this.showSupporterDetails;
         let d = p.dist(p.mouseX, p.mouseY, this.x, this.y);
         if (d < this.flowerRadius && this.showSupporterDetails) {
@@ -290,37 +274,37 @@ class GardenViz extends React.Component {
           this.div.hide();
           p.cursor("default");
         }
-      }
+      };
 
       // Returns a string that tells when the supporter was last active
-      getLastActive() {
+      getLastActive = () => {
         let lastPrayer = this.prayers[this.prayers.length - 1];
         switch(lastPrayer) {
           case 1: return "Last hour";
-            break
+                  break;
           case 2: return "Last day";
-            break
+                  break;
           case 3: return "Last 3 days";
-            break
+                  break;
           case 4: return "Last week";
-            break
+                  break;
           case 5: return "Last month";
-            break
+                  break;
           case 6: return "Last year";
-            break
+                  break;
           default: return "Last year";
         }
-      }
+      };
 
       // Returns a string that tells the community of the supporter
-      getCommunity() {
+      getCommunity = () => {
         switch(this.communityType) {
           case 1: return "Church";
-            break
+                  break;
           case 2: return "Gym";
-            break
+                  break;
           case 3: return "Family";
-            break
+                  break;
           default: return "Unknown";
         }
       }
@@ -367,7 +351,7 @@ class GardenViz extends React.Component {
     console.log(this.myP5);
   }
 
-  // Whenever there is a change in data
+  // TODO: props should change based on change in data from backend
   componentDidUpdate(prevProps) {
     // this.myP5 = new p5(this.Sketch, this.myRef.current);
   }
