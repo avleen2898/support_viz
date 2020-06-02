@@ -38,6 +38,7 @@ function App() {
                 <Route exact path='/' component={LandingPage}/>
                 <Route exact path='/login' component={SignIn}/>
                 <Route exact path='/register' component={SignUp}/>
+                <Route exact path='/my-garden' component={GardenViz}/>
             </Router>
         </Provider>
     );
