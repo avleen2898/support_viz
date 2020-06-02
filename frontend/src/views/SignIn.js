@@ -45,6 +45,12 @@ class SignIn extends React.Component {
         }
     }
 
+    componentDidMount() {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/");
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.auth.isAuthenticated) {
             this.props.history.push('/');
@@ -66,7 +72,6 @@ class SignIn extends React.Component {
 
         Axios.post(`/api/users/login`, userData)
             .then(res => {
-                console.log(res.data);
                 const {token} = res.data;
                 localStorage.setItem("jwtToken", token);
                 setAuthToken(token);

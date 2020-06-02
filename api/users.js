@@ -34,7 +34,7 @@ router.post("/login", (req, res, next) => {
                     payload,
                     process.env.JWT_KEY,
                     {
-                        expiresIn: 3600
+                        expiresIn: 360000
                     },
                     (err, token) => {
                         if (err) next(err);

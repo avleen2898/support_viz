@@ -1,3 +1,5 @@
+import setAuthToken from "../utils/setAuthToken";
+
 const isEmpty = require("is-empty");
 
 const initialState = {
@@ -19,6 +21,10 @@ const authReducer = (state = initialState, action) => {
                 ...state,
                 loading: true
             };
+        case 'LOGOUT_USER':
+            localStorage.removeItem("jwtToken");
+            setAuthToken(false);
+            return state;
         default:
             return state;
     }

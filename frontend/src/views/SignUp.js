@@ -9,6 +9,7 @@ import {withStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {ReactComponent as Logo} from '../logo.svg';
 import axios from "axios";
+import {connect} from 'react-redux'
 
 const useStyles = (theme) => ({
     paper: {
@@ -41,6 +42,12 @@ class SignUp extends React.Component {
             password2: "",
             errors: {}
         };
+    }
+
+    componentDidMount() {
+        if (this.props.auth.isAuthenticated) {
+            this.props.history.push("/");
+        }
     }
 
     onChange = e => {
@@ -182,4 +189,10 @@ class SignUp extends React.Component {
     }
 }
 
-export default withStyles(useStyles)(SignUp);
+function mapStateToProps(state) {
+    return {
+        auth: state.auth
+    }
+};
+
+export default connect(mapStateToProps)(withStyles(useStyles)(SignUp));

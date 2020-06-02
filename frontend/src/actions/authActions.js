@@ -1,4 +1,3 @@
-import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 
 export const setCurrentUser = token => {
@@ -15,8 +14,8 @@ export const setUserLoading = () => {
     };
 };
 
-export const logoutUser = () => dispatch => {
-    localStorage.removeItem("jwtToken");
-    setAuthToken(false);
-    dispatch(setCurrentUser({}));
+export const logoutUser = () => {
+    return {
+        type: 'LOGOUT_USER'
+    };
 };
