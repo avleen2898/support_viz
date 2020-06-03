@@ -1,5 +1,9 @@
 import React from 'react';
 import p5 from 'p5';
+import '../styles/gardenStyles.css';
+
+// Stores the supporter data from the backend
+let data;
 
 class GardenViz extends React.Component {
   // props can be the original data; receives news props when data is updated, use componentDidUpdate to render visualization again
@@ -8,12 +12,38 @@ class GardenViz extends React.Component {
     this.myRef = React.createRef();
   }
 
+  // TODO: Get data from backend
+  componentDidMount() {
+    this.myP5 = new p5(this.Sketch, this.myRef.current);
+    data = [{
+      "name": "Bruno",
+      "face": "bruno.jpg",
+      "prayers": [6, 6, 5, 4, 1, 1],
+      "communityType": 3,
+    },
+      {
+        "name": "Person1",
+        "face": "face1.jpg",
+        "prayers": [5, 4, 3],
+        "communityType": 2
+      }];
+  }
+
+  // TODO: props should change based on change in data from backend
+  componentDidUpdate(prevProps) {
+  }
+
+  // Cleanup code would go here
+  componentWillUnmount() {
+
+  }
+
   Sketch = (p) => {
     // Ignore the friendly errors that come from the copy function
     p.disableFriendlyErrors = true;
-    // TODO: get supporter data from backend
+    // An array that stores all the flower objects created from supporter data
     let allSupporters = [];
-    // Set a limit for the maximum number of flowers on the screen -- to be used in future implementations
+    // Set a limit for the maximum number of flowers on the screen
     let flowersOnScreen = 15;
     // Indices for starting and ending supporter index from the supporter array -- to be used in future implementations
     let startingFlowerIndex = 0;
@@ -22,14 +52,6 @@ class GardenViz extends React.Component {
     let bgImg;
     // Storing for experimentation
     let brunoImg;
-    // Variable to store data for now
-    let data = [{
-      "prayers": [6, 6, 5, 4, 1, 1],
-      "communityType": 3,
-      "face": "bruno.jpg",
-      "signUpTime": 1020303,
-      "name": "Bruno"
-    }];
     // Variables to set the color theme of the garden
     let colorTheme;
     let colorThemePurple = ['#990099', '#ad33ad', '#b84db8', '#c671c6', '#d494d4', '#dca6dc'];
@@ -57,22 +79,21 @@ class GardenViz extends React.Component {
       // Attach mouse moved event to the canvas to change cursor for viewing supporter details
       network.mouseMoved(p.changeCursor);
 
-      // for (let i = 0; i < Object.keys(data).length; i++) {
-      //   // Load supporter image before pushing them to the array
-      //   loadImage("images/"+ data[i].face, img => {
-      //     imageDoneLoading(i, img)
-      //   });
-      // }
-      // let imgPath = require("../images/bruno.jpg");
-      // p.loadImage(imgPath, img => {
-      //   imageDoneLoading(0, img);
-      // });
       // Set default color and stroke themes
-      currentColorTheme = colorThemePurple;
-      currentStrokeTheme = strokeThemePurple;
+      // TODO: Fix logic for setting colors
+      currentColorTheme = colorThemeOrange;
+      currentStrokeTheme = strokeThemeOrange;
       colorTheme = currentColorTheme;
       strokeTheme = currentStrokeTheme;
-      imageDoneLoading(0, brunoImg);
+
+      for (let i = 0; i < Object.keys(data).length; i++) {
+        // Load supporter image before pushing them to the array
+        let imgPath = require("../images/" + data[i].face);
+        console.log("Image path is: ", imgPath);
+        p.loadImage(imgPath, img => {
+          imageDoneLoading(i, img)
+        });
+      }
     };
 
     // Create flower objects out of supporter data in json file
@@ -84,11 +105,9 @@ class GardenViz extends React.Component {
       allCoordinates = [];
       p.background(bgImg);
       // Loop to draw each flower on the canvas
-      // for (let i = 0; i <= allSupporters.length; i++) {
-      let i = 0;
+      for (let i = 0; i < allSupporters.length; i++) {
         p.push();
         let f = allSupporters[i];
-        f.flowerColor = f.calculateColor();
         p.translate(f.startLocation, p.height);
         // New x and y coordinates based on translation
         f.x = f.startLocation;
@@ -102,7 +121,7 @@ class GardenViz extends React.Component {
         f.flowerBranch(f.segmentsLength);
         allCoordinates.push({x: f.x, y: f.y});
         p.pop();
-      // }
+      }
     };
 
     class Flower {
@@ -205,6 +224,7 @@ class GardenViz extends React.Component {
       };
 
       // Calculates the color of the flower based on most recent prayer
+      // TODO: Make colors random
       calculateColor = () => {
         let lastPrayer = this.prayers[this.prayers.length - 1];
         if (lastPrayer === 1) {
@@ -248,14 +268,13 @@ class GardenViz extends React.Component {
       };
 
       // Function to populate the div for a supporter with all their details
-      // TODO: Add supporter image to div
       initializeSupporterDetails = () => {
         this.div.addClass('supporterDetailDiv');
-        // let img = p.createImg("images/" + this.faceImageName, 'Supporter Image');
+        let img = p.createImg(require("../images/" + this.faceImageName), 'Supporter Image');
         let name = p.createP(this.name);
         let lastActive = p.createP("Last Active: " + this.getLastActive());
         let community = p.createP("Community: " + this.getCommunity());
-        // this.div.child(img);
+        this.div.child(img);
         this.div.child(name);
         this.div.child(lastActive);
         this.div.child(community);
@@ -310,6 +329,7 @@ class GardenViz extends React.Component {
       }
     }
 
+    // TODO: Add logic to update flower locations
     p.windowResized = () => {
       p.resizeCanvas(p.windowWidth, p.windowHeight);
     };
@@ -320,9 +340,17 @@ class GardenViz extends React.Component {
       for (let i = 0; i < allSupporters.length; i++) {
         allSupporters[i].handleClick();
       }
+      let allDetailDivs = Array.from(document.querySelectorAll('.supporterDetailDiv'));
+      let removeBlur = allDetailDivs.every((div) => {
+        let style = window.getComputedStyle(div);
+        return style.display === 'none';
+      });
+      if (removeBlur) {
+        document.getElementById('supportViz').classList.remove('blurCanvas');
+      }
     };
 
-    // Function to change cursor when user hovers over a flower
+    // TODO: Fix logic for changing cursor
     p.changeCursor = () => {
       for (let i = 0; i < allCoordinates.length; i++) {
         if (p.mouseX >= (allCoordinates[i].x - 50) && p.mouseX <= (allCoordinates[i].x + 50) &&
@@ -345,21 +373,6 @@ class GardenViz extends React.Component {
     }
 
   };
-
-  componentDidMount() {
-    this.myP5 = new p5(this.Sketch, this.myRef.current);
-    console.log(this.myP5);
-  }
-
-  // TODO: props should change based on change in data from backend
-  componentDidUpdate(prevProps) {
-    // this.myP5 = new p5(this.Sketch, this.myRef.current);
-  }
-
-  // Cleanup code would go here
-  componentWillUnmount() {
-
-  }
 
   render() {
     return (
