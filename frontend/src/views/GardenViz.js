@@ -44,8 +44,6 @@ class GardenViz extends React.Component {
         let endingFlowerIndex = 0;
         // Variable to store backdrop
         let bgImg;
-        // Storing for experimentation
-        let brunoImg;
         // Variables to set the color theme of the garden
         let colorTheme;
         let colorThemePurple = ['#990099', '#ad33ad', '#b84db8', '#c671c6', '#d494d4', '#dca6dc'];
@@ -64,7 +62,6 @@ class GardenViz extends React.Component {
 
         p.preload = () => {
             bgImg = p.loadImage(require("../images/background.jpg"));
-            brunoImg = p.loadImage(require("../images/bruno.jpg"));
         };
 
         p.setup = () => {
