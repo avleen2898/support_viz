@@ -1,9 +1,11 @@
 import React from 'react'
+import axios from 'axios'
 import {withStyles} from "@material-ui/core/styles";
 import Avatar from "@material-ui/core/Avatar";
 import {ReactComponent as Logo} from "../logo.svg";
 import {connect} from 'react-redux';
 import Button from "@material-ui/core/Button";
+import {logoutUser} from "../actions/authActions";
 
 const useStyles = (theme) => ({
     headerBar: {
@@ -30,6 +32,17 @@ const useStyles = (theme) => ({
 
 class Header extends React.Component {
 
+    handleSignOut = (e) => {
+        e.preventDefault();
+        axios.get(`/api/auth/signOut`)
+          .then((res) => {
+              this.props.logout();
+          })
+          .catch((err) => {
+              console.log("Error logging user out!");
+          })
+    };
+
     render() {
         const {classes} = this.props;
         let button;
@@ -43,9 +56,17 @@ class Header extends React.Component {
                 Sign In
             </Button>
         } else {
-            button = <h2 className={classes.greeting}>
-                Welcome {this.props.user.firstName}!
-            </h2>
+            button = <div className={classes.greeting}>
+                <h2>
+                    Welcome {this.props.user.firstName}!
+                </h2>
+                <Button type="submit"
+                        variant="contained"
+                        className={classes.button}
+                        onClick={this.handleSignOut}>
+                  Sign Out
+                </Button>
+              </div>
         }
 
         return (
@@ -69,4 +90,10 @@ function mapStateToProps(state) {
     }
 };
 
-export default connect(mapStateToProps)(withStyles(useStyles)(Header));
+function mapDispatchToProps(dispatch) {
+    return {
+        logout: () => dispatch(logoutUser())
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(useStyles)(Header));

@@ -6,8 +6,9 @@ const logger = require('morgan');
 const helmet = require('helmet');
 const passport = require("passport");
 
-const usersRouter = require('./api/users');
-const healthRouter = require('./api/health');
+const usersRouter = require('./api/usersController');
+const healthRouter = require('./api/healthController');
+const gardenRouter = require('./api/gardenController');
 const app = express();
 
 // view engine setup
@@ -35,6 +36,7 @@ require("./config/passport")(passport);
 
 app.use('/api/auth', usersRouter);
 app.use('/api/health', passport.authenticate('jwt'), healthRouter);
+app.use('/api/garden', gardenRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
