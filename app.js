@@ -20,7 +20,7 @@ app.use(helmet())
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'frontend/build')));
+app.use(express.static(path.join(__dirname, 'frontend/build//static')));
 
 app.use(passport.initialize());
 
@@ -38,6 +38,14 @@ app.use('/api/auth', usersRouter);
 app.use('/api/health', passport.authenticate('jwt'), healthRouter);
 app.use('/api/garden', gardenRouter);
 
+if (app.get('env') === 'production') {
+    app.use(express.static('frontend/build'));
+    app.get('*', (req, res) => {
+        console.log('Here');
+        res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
+    });
+}
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
@@ -53,12 +61,5 @@ app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error');
 });
-
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static('frontend/build'));
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'));
-    });
-}
 
 module.exports = app;
