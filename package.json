@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "(cd frontend && npm run build && cd ../) & node ./bin/www",
+    "start": "node ./bin/www",
     "full-dev": "concurrently \"PORT=3001 nodemon ./bin/www\" \"npm start --prefix frontend\"",
     "full-dev-windows": "concurrently \"set PORT=3001 && nodemon ./bin/www\" \"npm start --prefix frontend\"",
     "server-dev": "nodemon ./bin/www",
