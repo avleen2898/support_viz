@@ -7,7 +7,8 @@
     "full-dev": "concurrently \"PORT=3001 nodemon ./bin/www\" \"npm start --prefix frontend\"",
     "full-dev-windows": "concurrently \"set PORT=3001 && nodemon ./bin/www\" \"npm start --prefix frontend\"",
     "server-dev": "nodemon ./bin/www",
-    "client-dev": "(cd frontend && npm run server)"
+    "client-dev": "(cd frontend && npm run server)",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
