@@ -15,7 +15,7 @@ class GardenViz extends React.Component {
 
     componentDidMount() {
         Axios.get('/api/garden/view/1234').then(res => {
-            console.log(res.data)
+            console.log(res.data);
             data = res.data.data;
             new p5(this.Sketch, this.myRef.current);
         }).catch(err => {
@@ -52,13 +52,12 @@ class GardenViz extends React.Component {
         let strokeTheme;
         let strokeThemePurple = '#A9A9A9';
         let strokeThemeOrange = '#FFD500';
-        // Variables to store the current color and stroke themes
-        let currentColorTheme;
-        let currentStrokeTheme;
         // Store all x and y coordinates of flowers on screen to change cursor on mouse over
         let allCoordinates = [];
         // Store all start locations
         let allStartLocations = [];
+        // Variable to check for updates to flower locations on window resized events
+        let windowResized = false;
 
         p.preload = () => {
             bgImg = p.loadImage(require("../images/background.jpg"));
@@ -71,16 +70,12 @@ class GardenViz extends React.Component {
             network.mouseMoved(p.changeCursor);
 
             // Set default color and stroke themes
-            // TODO: Fix logic for setting colors
-            currentColorTheme = colorThemeOrange;
-            currentStrokeTheme = strokeThemeOrange;
-            colorTheme = currentColorTheme;
-            strokeTheme = currentStrokeTheme;
+            colorTheme = colorThemeOrange;
+            strokeTheme = strokeThemeOrange;
 
             for (let i = 0; i < Object.keys(data).length; i++) {
                 // Load supporter image before pushing them to the array
                 let imgPath = require("../images/" + data[i].face);
-                console.log("Image path is: ", imgPath);
                 p.loadImage(imgPath, img => {
                     imageDoneLoading(i, img)
                 });
@@ -89,7 +84,8 @@ class GardenViz extends React.Component {
 
         // Create flower objects out of supporter data in json file
         function imageDoneLoading(supporter, face) {
-            allSupporters.push(new Flower(data[supporter].prayers, data[supporter].communityType, data[supporter].face, data[supporter].name, face));
+            let firstLoad = true;
+            allSupporters.push(new Flower(data[supporter].prayers, data[supporter].communityType, data[supporter].face, data[supporter].name, face, firstLoad));
         }
 
         p.draw = () => {
@@ -99,6 +95,14 @@ class GardenViz extends React.Component {
             for (let i = 0; i < allSupporters.length; i++) {
                 p.push();
                 let f = allSupporters[i];
+                // Check for window resized events
+                if (windowResized) {
+                    f.startLocation = f.calculateStartLocation(f.communityType);
+                }
+                if (f.segmentsLength < f.maxSegmentsLength) {
+                    f.segmentsLength += 0.5;
+                    f.flowerRadius = f.calculateFlowerRadius(f.segmentsLength);
+                }
                 p.translate(f.startLocation, p.height);
                 // New x and y coordinates based on translation
                 f.x = f.startLocation;
@@ -113,21 +117,23 @@ class GardenViz extends React.Component {
                 allCoordinates.push({x: f.x, y: f.y});
                 p.pop();
             }
+            windowResized = false;
         };
 
         class Flower {
-            constructor(prayers, communityType, faceImageName, name, face) {
+            constructor(prayers, communityType, faceImageName, name, face, firstLoad) {
                 this.prayers = prayers;
                 this.communityType = communityType;
                 this.faceImageName = faceImageName;
                 this.name = name;
                 this.face = face;
+                this.firstLoad = firstLoad;
 
                 this.flowerColor = this.calculateColor();
                 this.startLocation = this.calculateStartLocation(this.communityType);
-                // TODO: make segmentsLength random; no more dependency on relationship length
-                this.segmentsLength = 80;
-                this.flowerRadius = p.map(this.segmentsLength, 50, 80, 40, 60);
+                this.maxSegmentsLength = this.calculateMaxSegmentLength();
+                this.segmentsLength = this.firstLoad ? 10: this.maxSegmentsLength;
+                this.flowerRadius = this.calculateFlowerRadius(this.segmentsLength);
                 this.flowerPetalNum = this.calculatePetals(this.prayers);
                 this.startAngle = p.random(-10, 10);
                 this.angle = p.map(this.startAngle, -10, 10, -10, 10);
@@ -214,22 +220,9 @@ class GardenViz extends React.Component {
             };
 
             // Calculates the color of the flower based on most recent prayer
-            // TODO: Make colors random
             calculateColor = () => {
-                let lastPrayer = this.prayers[this.prayers.length - 1];
-                if (lastPrayer === 1) {
-                    return p.color(colorTheme[0]);
-                } else if (lastPrayer === 2) {
-                    return p.color(colorTheme[1]);
-                } else if (lastPrayer === 3) {
-                    return p.color(colorTheme[2]);
-                } else if (lastPrayer === 4) {
-                    return p.color(colorTheme[3]);
-                } else if (lastPrayer === 5) {
-                    return p.color(colorTheme[4]);
-                } else {
-                    return p.color(colorTheme[5]);
-                }
+                let colorIndex = Math.floor(Math.random() * 6);
+                return p.color(colorTheme[colorIndex]);
             };
 
             // Calculating start location for the flower based on community type
@@ -255,6 +248,14 @@ class GardenViz extends React.Component {
                     locationValid = checkLocationValid(location);
                 }
                 return location;
+            };
+
+            calculateMaxSegmentLength = () => {
+                return Math.floor(Math.random() * (150 - 50) + 50);
+            };
+
+            calculateFlowerRadius = (segmentsLength) => {
+                return p.map(segmentsLength, 50, 150, 50, 70);
             };
 
             // Function to populate the div for a supporter with all their details
@@ -330,9 +331,9 @@ class GardenViz extends React.Component {
             }
         }
 
-        // TODO: Add logic to update flower locations
         p.windowResized = () => {
             p.resizeCanvas(p.windowWidth, p.windowHeight);
+            windowResized = true;
         };
 
         // Mouse pressed event for handling click events on flowers
