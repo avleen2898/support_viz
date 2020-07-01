@@ -338,7 +338,6 @@ class GardenViz extends React.Component {
 
         // Mouse pressed event for handling click events on flowers
         p.mousePressed = () => {
-            // document.getElementById('supportViz').classList.remove('blurCanvas');
             for (let i = 0; i < allSupporters.length; i++) {
                 allSupporters[i].handleClick();
             }
